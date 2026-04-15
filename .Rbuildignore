@@ -1,0 +1,11 @@
+^[.]?air[.]toml$
+^\.vscode$
+^LICENSE\.md$
+^rpkgkit\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^cran-comments\.md$
+
+
+# flir files
+^flir$
