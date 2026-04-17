@@ -1,10 +1,25 @@
+#' Fix R code or package using flir
+#'
+#' @description
+#' Automatically detect the type of path (file, package, or directory) and
+#' apply the appropriate flir fix function.
+#'
+#' @param path A file path, package directory path, or NULL. If NULL and
+#'   running in RStudio, uses the active document path.
+#' @param ... Additional arguments passed to the underlying flir fix function.
+#'
+#' @details
+#' The function determines the fix strategy based on the path type:
+#' - If `path` points to an existing file, calls `flir::fix()`
+#' - If `path` is a package directory (contains DESCRIPTION), calls `flir::fix_package()`
+#' - If `path` is a directory, calls `flir::fix_dir()`
+#'
+#' @return Invisibly returns the result from the called flir function.
+#'
 #' @export
-flir_fix <- function(path, ...) {
-  path <- if (is.null(path) && rlang::is_installed("rstudioapi")) {
-    rstudioapi::getActiveDocumentContext()$path
-  } else {
-    cli::cli_abort(("c" = "{.arg path} is required"))
-  }
+flir_fix <- function(path = NULL, ...) {
+  rlang::check_installed("flir")
+  path <- path %||% rstudioapi::getActiveDocumentContext()$path
 
   if (file.exists(path)) {
     flir::fix(path = path, ...)

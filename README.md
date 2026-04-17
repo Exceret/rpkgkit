@@ -20,9 +20,3 @@ You can install the development version of rpkgkit from
     # install.packages("pak")
     pak::pak("Exceret/rpkgkit")
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-    library(rpkgkit)
-    ## basic example code
