@@ -3,7 +3,7 @@
 # file: standalone-caller_cli.R
 # last-updated: 2026-04-16
 # license: https://unlicense.org
-# imports: [cli]
+# imports: [cli, rlang]
 # ---
 
 #' @title Get Caller Name

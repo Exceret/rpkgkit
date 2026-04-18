@@ -67,9 +67,9 @@ add_timestamp_to_cli <- function(cli_func) {
   function(...) {
     messages <- list(...)
 
-    if (length(messages) > 0) {
-      if (is.character(messages[[1]])) {
-        messages[[1]] <- paste0("[{time_stamp()}] ", messages[[1]])
+    if (length(messages) > 0L) {
+      if (is.character(messages[[1L]])) {
+        messages[[1L]] <- paste0("[{time_stamp()}] ", messages[[1L]])
       }
     }
 

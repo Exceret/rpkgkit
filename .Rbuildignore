@@ -9,3 +9,4 @@
 
 # flir files
 ^flir$
+^\.github$

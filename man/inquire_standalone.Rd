@@ -4,7 +4,7 @@
 \alias{inquire_standalone}
 \title{Inquire Standalone Files from a GitHub Repository}
 \usage{
-inquire_standalone(owner, repo)
+inquire_standalone(owner, repo, ...)
 }
 \arguments{
 \item{owner}{A character string specifying the repository owner's username.}

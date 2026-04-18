@@ -3,7 +3,7 @@
 # file: standalone-args_to_func.R
 # last-updated: 2026-04-16
 # license: https://unlicense.org
-# imports: [cli, data.table, purrr]
+# imports: [cli, data.table, purrr, rlang]
 # ---
 
 #' @title Keep Wanted Arguments According to A Function from Dots
@@ -157,7 +157,6 @@ filter_args_for_func <- function(args_list, fun, keep = NULL) {
 #' # Returns: c("f1", "f2") when dots_enabled=TRUE
 #' }
 #' @noRd
-#' @seealso [filter_args_for_func()] for filtering arguments to a function.(Reverse of this function)
 match_func_to_args <- function(
   args_list,
   ...,
@@ -265,7 +264,7 @@ match_func_to_args <- function(
     if (name_only) {
       return(guess_dt$func_name[1])
     } else {
-      return(dots_funcs[[guess_dt$func_name[1]]])
+      return(dots_funcs[[guess_dt$func_name[1L]]])
     }
   }
 
@@ -312,7 +311,7 @@ get_func_args <- function(
     dots_env = envir,
     dots_expand = dots_expand
   )
-  args_list <- as.list(cl)[-1]
+  args_list <- as.list(cl)[-1L]
   if (length(exclude) != 0L) {
     if (is.character(exclude)) {
       args_list <- args_list[!names(args_list) %in% exclude]

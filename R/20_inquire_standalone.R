@@ -4,6 +4,7 @@
 #'
 #' @param owner A character string specifying the repository owner's username.
 #' @param repo A character string specifying the repository name.
+#' @param ... No arguments.
 #'
 #' @return A tibble with three columns:
 #' \describe{
@@ -15,94 +16,27 @@
 #' @details This function queries the GitHub API to list files in the R/ directory, filters for files starting with "standalone-", parses each file's YAML metadata (delimited by "# ---") and roxygen tags to extract descriptions, and generates usage code for importing each standalone file.
 #'
 #' @export
-inquire_standalone <- function(owner, repo) {
-  rlang::check_installed(c("jsonlite", "cli", "purrr"))
-  api_url <- paste0(
-    "https://api.github.com/repos/",
-    owner,
-    "/",
-    repo,
-    "/contents/R"
+inquire_standalone <- function(owner, repo, ...) {
+  rlang::check_dots_empty0()
+  rlang::check_installed(c("gh", "dplyr"))
+  repo_spec <- paste0(owner, "/", repo)
+
+  response <- gh::gh(
+    "/repos/{repo_spec}/contents/R",
+    repo_spec = repo_spec,
+    .accept = "application/vnd.github.v3.raw"
   )
 
-  response <- tryCatch(
-    jsonlite::fromJSON(readLines(api_url, warn = FALSE)),
-    error = function(e) {
-      cli::cli_abort(
-        "Failed to fetch R/ directory from {.val {owner}/{repo}}: {e$message}"
-      )
-    }
-  )
-
-  standalone_files <- response[grepl("^standalone-", response$name), ]
-
-  if (NROW(standalone_files) == 0L) {
-    cli::cli_warn("No standalone files found in {.val {owner}/{repo}}")
-    return(tibble::tibble(
-      `owner/repo` = character(),
-      description = character(),
-      usage = character()
-    ))
-  }
-
-  purrr::map_dfr(seq_len(NROW(standalone_files)), function(i) {
-    file_info <- standalone_files[i, ]
-
-    content <- tryCatch(
-      readLines(file_info$download_url, warn = FALSE),
-      error = function(e) {
-        cli::cli_warn("Cannot read {.val {file_info$name}}: {e$message}")
-        NULL
+  standalone_response <- lapply(
+    X = response,
+    FUN = function(x) {
+      if (startsWith(x$name, "standalone-")) {
+        return(x)
+      } else {
+        return(NULL)
       }
-    )
-    if (is.null(content)) {
-      return(NULL)
     }
+  )
 
-    delim <- which(content == "# ---")
-    if (length(delim) < 2L) {
-      return(NULL)
-    }
-
-    yaml_lines <- content[(delim[1] + 1L):(delim[2] - 1L)]
-
-    meta <- stats::setNames(
-      vapply(
-        yaml_lines,
-        function(line) {
-          parts <- strsplit(line, ":\\s*", fixed = TRUE)[[1]]
-          if (length(parts) >= 2L) trimws(parts[2]) else ""
-        },
-        FUN.VALUE = character(1)
-      ),
-      vapply(
-        yaml_lines,
-        function(line) {
-          trimws(strsplit(line, ":\\s*", fixed = TRUE)[[1]][1])
-        },
-        FUN.VALUE = character(1)
-      )
-    )
-
-    desc_idx <- grep("@(?:title|description)", content)
-
-    desc_text <- ""
-    if (length(desc_idx) > 0L) {
-      after_desc <- content[min(desc_idx) + 1L]
-      desc_text <- gsub("^#'\\s*(?:@description\\s*)?", "", trimws(after_desc))
-    }
-
-    pkg_repo <- paste0(owner, "/", repo)
-    usage <- sprintf(
-      'usethis::use_standalone("%s", "%s")',
-      pkg_repo,
-      gsub("^standalone-(.*)\\.R", "\\1", file_info$name)
-    )
-
-    tibble::tibble(
-      `owner/repo` = !!pkg_repo,
-      description = desc_text,
-      usage = usage
-    )
-  })
+  dplyr::bind_rows(standalone_response)
 }
