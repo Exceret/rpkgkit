@@ -7,21 +7,28 @@ Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Suggests: 
     data.table,
-    dplyr,
     flir,
     gh,
     pedant,
-    purrr,
     rmarkdown,
-    testthat (>= 3.0.0),
-    tibble
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports: 
     cli,
-    rlang (>= 1.0.0),
-    rstudioapi
+    dplyr,
+    ggplot2,
+    knitr,
+    purrr,
+    ragg,
+    rlang,
+    rstudioapi,
+    scales,
+    stats,
+    stringr,
+    systemfonts,
+    tibble
 Remotes:
     github::wurli/pedant

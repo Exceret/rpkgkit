@@ -10,6 +10,8 @@ inquire_standalone(owner, repo, ...)
 \item{owner}{A character string specifying the repository owner's username.}
 
 \item{repo}{A character string specifying the repository name.}
+
+\item{...}{No arguments.}
 }
 \value{
 A tibble with three columns:

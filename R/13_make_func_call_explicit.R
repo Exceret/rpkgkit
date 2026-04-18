@@ -1,25 +1,37 @@
-#' Make function calls explicit by adding double colons
+#' Make Function Calls Explicit
 #'
 #' @description
-#' This function reads an R file and adds explicit package namespace qualifiers
-#' (double colons) to function calls using the `pedant` package. If no path is
-#' provided, it attempts to use the currently active file in RStudio.
+#' Add double colons (`::`) to function calls from specified packages to make
+#' package dependencies explicit in R code.
 #'
-#' @param path A character string specifying the path to the R file to process.
-#'   If `NULL` and RStudio is available, the active document path is used.
-#' @param ... Additional arguments (currently unused).
+#' @param path A character string specifying the path to the R file to modify.
+#'   If `NULL` and RStudio is available, the currently active document path is used.
+#' @param use_packages A character vector of package names to process. Defaults to
+#'   `pedant::current_packages()`.
+#' @param ignore_functions A character vector of function names to ignore. Defaults to
+#'   `pedant::imported_functions()`.
+#' @param ... Additional arguments. Currently unused and must be empty.
 #'
-#' @return Invisible `NULL`. The function modifies the file in place.
+#' @return
+#' Invisible `NULL`. This function is called for its side effect of modifying the
+#' specified file in place.
 #'
 #' @details
-#' The function requires the `pedant` package to be installed. It reads the file,
-#' adds double colons to function calls to make package dependencies explicit,
-#' and writes the modified code back to the same file.
+#' This function reads the specified R file, identifies function calls from the
+#' specified packages, and adds explicit namespace qualifiers (`::`) to those
+#' calls. The modified code is written back to the original file.
+#'
+#' @seealso
+#' [pedant::add_double_colons()], [pedant::current_packages()], [pedant::imported_functions()]
 #'
 #' @examples
 #' \dontrun{
 #' make_func_call_explicit("path/to/file.R")
-#' make_func_call_explicit()  # Uses active RStudio file
+#' make_func_call_explicit(
+#'   path = "path/to/file.R",
+#'   use_packages = c("dplyr", "tidyr"),
+#'   ignore_functions = c("library", "require")
+#' )
 #' }
 #'
 #' @export

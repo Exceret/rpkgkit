@@ -37,28 +37,28 @@ check_list <- function(x,
                        allow_na = FALSE,
                        allow_empty = FALSE,
                        allow_null = FALSE,
-                       arg = caller_arg(x),
-                       call = caller_env()) {
+                       arg = rlang::caller_arg(x),
+                       call = rlang::caller_env()) {
   if (allow_na && is.na(x)) {
     return(invisible(NULL))
   }
 
-  if (allow_null && is_null(x)) {
+  if (allow_null && purrr::is_null(x)) {
     return(invisible(NULL))
   }
 
-  if (is_empty(x)) {
+  if (purrr::is_empty(x)) {
     if (allow_empty) {
       return(invisible(NULL))
     }
 
-    cli_abort(
+    cli::cli_abort(
       "{.arg {arg}} can't be empty.",
       call = call
     )
   }
 
-  if (is_list(x)) {
+  if (rlang::is_list(x)) {
     return(invisible(NULL))
   }
 
@@ -73,7 +73,7 @@ check_list <- function(x,
 #' Does x match the pattern of a URL?
 #' @noRd
 is_url <- function(x, pattern = NULL, ...) {
-  if (!is_vector(x) || is_empty(x)) {
+  if (!rlang::is_vector(x) || rlang::is_empty(x)) {
     return(FALSE)
   }
 
@@ -91,9 +91,9 @@ check_url <- function(url,
                       pattern = NULL,
                       ...,
                       allow_null = FALSE,
-                      arg = caller_arg(url),
-                      call = caller_env()) {
-  if (allow_null && is_null(url)) {
+                      arg = rlang::caller_arg(url),
+                      call = rlang::caller_env()) {
+  if (allow_null && purrr::is_null(url)) {
     return(invisible(NULL))
   }
 
@@ -177,26 +177,26 @@ check_exclusive_args <- function(x = NULL,
                                  y = NULL,
                                  require = TRUE,
                                  ...,
-                                 x_arg = caller_arg(x),
-                                 y_arg = caller_arg(y),
-                                 call = caller_env()) {
-  if (is_empty(c(x, y))) {
+                                 x_arg = rlang::caller_arg(x),
+                                 y_arg = rlang::caller_arg(y),
+                                 call = rlang::caller_env()) {
+  if (purrr::is_empty(c(x, y))) {
     if (!require) {
       return(invisible(NULL))
     }
 
-    cli_abort(
+    cli::cli_abort(
       "One of {.arg {x_arg}} or {.arg {y_arg}} must be supplied.",
       call = call,
       ...
     )
   }
 
-  if (!has_length(c(x, y), 2)) {
+  if (!rlang::has_length(c(x, y), 2)) {
     return(invisible(NULL))
   }
 
-  cli_abort(
+  cli::cli_abort(
     "Exactly one of {.arg {x_arg}} or {.arg {y_arg}} must be supplied.",
     call = call,
     ...
@@ -236,13 +236,13 @@ check_has_name <- function(x,
     add_msg <- NULL
   }
 
-  cli_abort(
+  cli::cli_abort(
     message = c(
       "{.arg {arg}} must have{what} the name{cli::qty(n)}{?s} {.val {nm}}.",
       add_msg
       ),
     ...,
-    .envir = current_env(),
+    .envir = rlang::current_env(),
     call = call
   )
 }

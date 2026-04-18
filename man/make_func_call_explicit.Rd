@@ -2,7 +2,7 @@
 % Please edit documentation in R/13_make_func_call_explicit.R
 \name{make_func_call_explicit}
 \alias{make_func_call_explicit}
-\title{Make function calls explicit by adding double colons}
+\title{Make Function Calls Explicit}
 \usage{
 make_func_call_explicit(
   path = NULL,
@@ -12,28 +12,41 @@ make_func_call_explicit(
 )
 }
 \arguments{
-\item{path}{A character string specifying the path to the R file to process.
-If \code{NULL} and RStudio is available, the active document path is used.}
+\item{path}{A character string specifying the path to the R file to modify.
+If \code{NULL} and RStudio is available, the currently active document path is used.}
 
-\item{...}{Additional arguments (currently unused).}
+\item{use_packages}{A character vector of package names to process. Defaults to
+\code{pedant::current_packages()}.}
+
+\item{ignore_functions}{A character vector of function names to ignore. Defaults to
+\code{pedant::imported_functions()}.}
+
+\item{...}{Additional arguments. Currently unused and must be empty.}
 }
 \value{
-Invisible \code{NULL}. The function modifies the file in place.
+Invisible \code{NULL}. This function is called for its side effect of modifying the
+specified file in place.
 }
 \description{
-This function reads an R file and adds explicit package namespace qualifiers
-(double colons) to function calls using the \code{pedant} package. If no path is
-provided, it attempts to use the currently active file in RStudio.
+Add double colons (\code{::}) to function calls from specified packages to make
+package dependencies explicit in R code.
 }
 \details{
-The function requires the \code{pedant} package to be installed. It reads the file,
-adds double colons to function calls to make package dependencies explicit,
-and writes the modified code back to the same file.
+This function reads the specified R file, identifies function calls from the
+specified packages, and adds explicit namespace qualifiers (\code{::}) to those
+calls. The modified code is written back to the original file.
 }
 \examples{
 \dontrun{
 make_func_call_explicit("path/to/file.R")
-make_func_call_explicit()  # Uses active RStudio file
+make_func_call_explicit(
+  path = "path/to/file.R",
+  use_packages = c("dplyr", "tidyr"),
+  ignore_functions = c("library", "require")
+)
 }
 
+}
+\seealso{
+\code{\link[pedant:add_double_colons]{pedant::add_double_colons()}}, \code{\link[pedant:current_packages]{pedant::current_packages()}}, \code{\link[pedant:current_packages]{pedant::imported_functions()}}
 }
