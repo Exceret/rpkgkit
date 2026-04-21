@@ -27,8 +27,6 @@ RoxygenNote: 7.3.3
 Imports: 
     cli,
     rlang,
-    rstudioapi,
-    systemfonts,
-    tibble
+    rstudioapi
 Remotes:
     github::wurli/pedant

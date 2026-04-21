@@ -1,3 +1,10 @@
+# rpkgkit 0.0.0.9000 (2026-04-21)
+
+## NEW FEATURES
+
+* standalone-colorful_cli: make changing text colors in cli code easier
+
+
 # rpkgkit 0.0.0.9000 (2024-01-15)
 
 ## NEW FEATURES

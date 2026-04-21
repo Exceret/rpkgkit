@@ -1,0 +1,176 @@
+# ---
+# repo: Exceret/rpkgkit
+# file: standalone-colorful_cli.R
+# last-updated: 2026-04-21
+# license: https://unlicense.org
+# imports: [cli]
+# ---
+
+#' @title Create Environment with Colorful CLI Functions
+#'
+#' @description
+#' Generates an environment containing color-wrapped versions of common CLI functions
+#' that automatically apply custom color themes to their output. This provides a
+#' convenient way to use multiple CLI functions with consistent colorful styling.
+#'
+#' @param cli_functions Character vector of function names from the \code{cli} package
+#'   to be wrapped with color functionality.
+#'
+#' @return Returns an environment containing color-wrapped versions of:
+#' \itemize{
+#'   \item \code{cli_alert_info}
+#'   \item \code{cli_alert_success}
+#'   \item \code{cli_alert_warning}
+#'   \item \code{cli_alert_danger}
+#' }
+#' Each function in the environment will automatically apply color themes to
+#' its output using inline span tags (e.g., \code{<span.red>}, \code{<span.blue>}).
+#'
+#' @details
+#' This function creates a new environment and populates it with color-wrapped
+#' versions of commonly used CLI functions from the \code{cli} package. Only
+#' functions that exist in the loaded \code{cli} package are added to the
+#' environment. The wrapping is done via \code{\link{add_colors_to_cli}}.
+#'
+#' @examples
+#' \dontrun{
+#' # Create environment with colorful CLI functions
+#' cli_env <- create_colorful_cli_env()
+#'
+#' # Use colorful functions
+#' cli_env$cli_alert_info("{.red This message will be red}")
+#' cli_env$cli_alert_success("{.green Operation completed!}")
+#' }
+#'
+#' @seealso \code{\link{add_colors_to_cli}} for the wrapper function used internally,
+#'          and \code{\link{generate_color_code}} for generating reusable theme setup code.
+#'
+#' @noRd
+#' @family colorful_cli
+#'
+create_colorful_cli_env <- function(
+  cli_functions = c(
+    "cli_alert_info",
+    "cli_alert_success",
+    "cli_alert_warning",
+    "cli_alert_danger"
+  )
+) {
+  cli_env <- new.env()
+
+  vapply(
+    X = cli_functions,
+    FUN = function(func_name) {
+      if (exists(func_name, envir = asNamespace("cli"))) {
+        orig_func <- get0(x = func_name, envir = asNamespace("cli"))
+
+        new_func <- add_colors_to_cli(orig_func)
+
+        assign(func_name, new_func, envir = cli_env)
+        list(NULL)
+      }
+    },
+    FUN.VALUE = list(NULL)
+  )
+
+  invisible(cli_env)
+}
+
+#' @title A Decorator for Adding Color Themes to CLI Functions
+#'
+#' @description
+#' A higher-order function that wraps CLI functions to automatically apply custom
+#' color themes to their output messages. This creates a modified version of any
+#' CLI function that supports inline span tags for colorful text.
+#'
+#' @param cli_func A CLI function from the \code{cli} package (e.g., \code{cli_alert_info},
+#'                 \code{cli_warn}) that will be wrapped with color functionality.
+#' @param cli_theme A named list defining the color theme for span tags.
+#'   Default theme includes:
+#'   \itemize{
+#'     \item \code{span.red}: red text
+#'     \item \code{span.blue}: blue text
+#'     \item \code{span.orange}: orange text
+#'     \item \code{span.purple}: purple text
+#'     \item \code{span.green}: green text
+#'     \item \code{span.magenta}: magenta text
+#'   }
+#'
+#' @return Returns a modified version of the input function that automatically
+#'         applies the color theme using \code{\link[cli]{cli_div}} and supports
+#'         inline span tags in message text.
+#'
+#' @details
+#' This function uses \code{\link[base]{force}} to ensure the CLI function is evaluated
+#' at creation time. The color theme is applied via \code{\link[cli]{cli_div}} with
+#' automatic cleanup via \code{\link[base]{on.exit}} to call \code{\link[cli]{cli_end}}.
+#'
+#' @examples
+#' \dontrun{
+#' # Create a color-enabled version of cli_alert_info
+#' color_alert <- add_colors_to_cli(cli::cli_alert_info)
+#' color_alert("{.blue Info} {.green System OK}")
+#' }
+#'
+#' @seealso \code{\link{create_colorful_cli_env}} for creating a complete environment
+#'          of colorful CLI functions, and \code{\link{generate_color_code}} for reusable
+#'          theme setup code.
+#'
+#' @noRd
+#' @family colorful_cli
+#'
+add_colors_to_cli <- function(
+  cli_func,
+  cli_theme = list(
+    span.red = list(color = "red"),
+    span.blue = list(color = "blue"),
+    span.orange = list(color = "orange"),
+    span.purple = list(color = "purple"),
+    span.green = list(color = "green"),
+    span.magenta = list(color = "magenta")
+  )
+) {
+  function(...) {
+    messages <- list(...)
+    cli::cli_div(theme = cli_theme)
+    on.exit(cli::cli_end())
+    do.call(cli_func, messages)
+  }
+}
+
+#' @title Generate Reusable Color Theme Setup Code
+#'
+#' @description
+#' Generates an unevaluated expression containing \code{\link[cli]{cli_div}} setup
+#' with the default color theme. This can be used to inject color theme initialization
+#' code into other functions or scripts without repeating the theme definition.
+#'
+#' @return An unevaluated expression (via \code{\link[rlang]{expr}}) that sets up
+#'         a colorful CLI environment with span tags for red, blue, orange, purple,
+#'         green, and magenta text colors.
+#'
+#' @details
+#' The returned expression can be evaluated with \code{\link[base]{eval}} or injected
+#' into other function bodies using \code{\link[rlang]{fn_body}} manipulation.
+#' The expression includes proper cleanup via \code{\link[base]{on.exit}}
+#' to call \code{\link[cli]{cli_end}}.
+#'
+#' @seealso \code{\link{add_colors_to_cli}} and \code{\link{create_colorful_cli_env}}
+#'          for higher-level interfaces to colorful CLI output.
+#'
+#' @noRd
+#' @family colorful_cli
+#'
+generate_color_code <- function() {
+  rlang::expr({
+    cli::cli_div(
+      span.red = list(color = "red"),
+      span.blue = list(color = "blue"),
+      span.orange = list(color = "orange"),
+      span.purple = list(color = "purple"),
+      span.green = list(color = "green"),
+      span.magenta = list(color = "magenta")
+    )
+    on.exit(cli::cli_end())
+  })
+}
