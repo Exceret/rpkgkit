@@ -1,4 +1,4 @@
-#' Create a standalone R file
+# This document was last modified on 2026-05-20.
 #'
 #' Creates a new standalone R script with YAML metadata header.
 #' If `path` is an R package, the file is created in the `R/` subdirectory.

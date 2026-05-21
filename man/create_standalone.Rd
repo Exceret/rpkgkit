@@ -2,7 +2,8 @@
 % Please edit documentation in R/21_create_standalone.R
 \name{create_standalone}
 \alias{create_standalone}
-\title{Create a standalone R file}
+\title{Creates a new standalone R script with YAML metadata header.
+If \code{path} is an R package, the file is created in the \verb{R/} subdirectory.}
 \usage{
 create_standalone(
   standalone_name = NULL,
