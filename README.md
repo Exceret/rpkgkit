@@ -27,7 +27,7 @@ so generally file path can be omitted.
 Require extra installation:
 
 - `air_format()` - Format R code using air
-- 
+
 - `flir_fix()` - Automatically fix linting issues using flir
 
 ### Available Standalone Scripts
@@ -52,14 +52,13 @@ Use `usethis::use_standalone("Exceret/rpkgkit", "<name>")` to import:
 
 - `news_md_add_entry()` - Add new entries to NEWS.md following CRAN
   guidelines
-- 
+
 - `news_md_check()` - Validate NEWS.md format for CRAN compliance
-- 
+
 - `news_md_show()` - Display NEWS.md content with optional filtering
 
 ### Other Utilities
 
 - `make_func_call_explicit()` - Make function calls explicit by adding
   package prefixes
-- 
 - `render_rmd()` - Render R Markdown documents
