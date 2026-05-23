@@ -3,14 +3,15 @@ is_pkg <- function(path) {
 }
 
 get_wd <- function() {
+  current_wd <- NULL
   if (rlang::is_installed("rstudioapi") && interactive()) {
     current_wd <- dirname(rstudioapi::getActiveDocumentContext()$path)
-  } else {
+  }
+  if (is.null(current_wd)) {
     current_wd <- getwd()
   }
   if (is_pkg(dirname(current_wd))) {
-    dirname(current_wd)
-  } else {
-    current_wd
+    return(dirname(current_wd))
   }
+  current_wd
 }

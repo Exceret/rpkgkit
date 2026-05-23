@@ -61,4 +61,7 @@ Use `usethis::use_standalone("Exceret/rpkgkit", "<name>")` to import:
 
 - `make_func_call_explicit()` - Make function calls explicit by adding
   package prefixes
+
 - `render_rmd()` - Render R Markdown documents
+
+- `use_hexsticker()` - Paste hex sticker to README.md
