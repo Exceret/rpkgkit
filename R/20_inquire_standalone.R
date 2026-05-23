@@ -19,7 +19,11 @@
 inquire_standalone <- function(owner, repo, ...) {
   rlang::check_dots_empty0()
   rlang::check_installed(c("gh", "dplyr"))
-  repo_spec <- paste0(owner, "/", repo)
+  repo_spec <- if (grepl("/", repo)) {
+    repo
+  } else {
+    paste0(owner, "/", repo)
+  }
 
   response <- gh::gh(
     "/repos/{repo_spec}/contents/R",

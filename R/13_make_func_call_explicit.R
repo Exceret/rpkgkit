@@ -51,7 +51,7 @@ make_func_call_explicit <- function(
 
   cli::cli_alert_info("Retrieving function calls from {.pkg {use_packages}}")
   formated_code <- pedant::add_double_colons(
-    code = readLines(path),
+    code = paste(readLines(path), collapse = "\n"),
     use_packages = use_packages,
     ignore_functions = ignore_functions
   )

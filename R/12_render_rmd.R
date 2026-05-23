@@ -16,5 +16,5 @@ render_rmd <- function(path = NULL, output_format = "md_document", ...) {
   if (is.null(path)) {
     cli::cli_abort(("c" = "{.arg path} is required"))
   }
-  rmarkdown::render(input = path, output_format = output_format)
+  rmarkdown::render(input = path, output_format = output_format, ...)
 }

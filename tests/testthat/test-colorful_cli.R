@@ -10,3 +10,15 @@ test_that("colorful_cli works", {
   code <- generate_color_code()
   expect_equal(class(code), "{")
 })
+
+test_that("combined cli env works", {
+  powered_cli_alert_success <- add_colors_to_cli(add_timestamp_to_cli(
+    cli::cli_alert_success
+  ))
+
+  powered_cli_alert_success("{.red This is a red alert.}")
+
+  cli_cyan_h1 <- add_colors_to_cli(add_timestamp_to_cli(cli::cli_h1))
+
+  cli_cyan_h1("{.cyan This is a cyan header}")
+})

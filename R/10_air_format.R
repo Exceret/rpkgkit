@@ -4,6 +4,14 @@
 #'   document in RStudio (requires `rstudioapi` package).
 #' @param ... Additional arguments passed to `system2()`.
 #'
+#' @details
+#' Install [air](https://github.com/posit-dev/air):
+#'
+#' Linux: `curl -LsSf https://github.com/posit-dev/air/releases/latest/download/air-installer.sh | sh`
+#' Windows: `powershell -ExecutionPolicy Bypass -c "irm https://github.com/posit-dev/air/releases/latest/download/air-installer.ps1 | iex"`
+#' uv: `uv tool install air-formatter`
+#' brew: `brew install air`
+#'
 #' @return The exit status of the `air format` command (invisibly).
 #'
 #' @export

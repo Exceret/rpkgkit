@@ -40,8 +40,8 @@ Invisibly returns \code{TRUE} on success.
 }
 \description{
 Adds a hex sticker image (optionally wrapped in a hyperlink) at the end of
-the first line in \code{README.md}. This is a common pattern for R package
-README files.
+the top-level heading (the line starting with \verb{# }) in \code{README.md}.
+This is a common pattern for R package README files.
 }
 \examples{
 \dontrun{
