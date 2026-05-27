@@ -13,9 +13,8 @@ status](https://www.r-pkg.org/badges/version/rpkgkit)](https://CRAN.R-project.or
 coverage](https://codecov.io/gh/Exceret/rpkgkit/graph/badge.svg)](https://app.codecov.io/gh/Exceret/rpkgkit)
 <!-- badges: end -->
 
-The goal of rpkgkit is to collect useful functions and standalone
-scripts for R package development. use `usethis::use_standalone()` to
-import the standalone scripts.
+The goal of rpkgkit is to provide useful functions for R package
+development.
 
 ## Features
 

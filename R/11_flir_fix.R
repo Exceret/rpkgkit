@@ -21,6 +21,8 @@ flir_fix <- function(path = NULL, ...) {
   rlang::check_installed("flir")
   path <- path %||% rstudioapi::getActiveDocumentContext()$path
 
+  cli::cli_alert_info("Fixing R code in {.path {path}}")
+
   if (file.exists(path)) {
     flir::fix(path = path, ...)
   } else if (is_pkg(path)) {
