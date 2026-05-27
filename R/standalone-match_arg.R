@@ -60,7 +60,7 @@ match_arg <- function(
   choices,
   default = choices[1L],
   call = rlang::caller_env(),
-  .envir = parent.frame(),
+  .envir = environment(),
   .frame = .envir,
   ...
 ) {
