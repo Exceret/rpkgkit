@@ -23,7 +23,11 @@ update_time_in_standalone <- function(path = NULL) {
   if (file.exists(path) && !dir.exists(path)) {
     files <- path
   } else if (is_pkg(path)) {
-    files <- list.files(file.path(path, "R"), pattern = "^standalone-", full.names = TRUE)
+    files <- list.files(
+      file.path(path, "R"),
+      pattern = "^standalone-",
+      full.names = TRUE
+    )
   } else if (dir.exists(path)) {
     files <- list.files(path, pattern = "^standalone-", full.names = TRUE)
   } else {
@@ -37,22 +41,26 @@ update_time_in_standalone <- function(path = NULL) {
 
   today <- format(Sys.time(), "%Y-%m-%d")
 
-  updated <- vapply(files, function(f) {
-    lines <- readLines(f, warn = FALSE)
-    idx <- grep("^#\\s+last-updated:\\s*", lines)
+  updated <- vapply(
+    X = files,
+    FUN = function(f) {
+      lines <- readLines(f, warn = FALSE)
+      idx <- grep("^#\\s+last-updated:\\s*", lines)
 
-    if (length(idx) == 0L) {
-      cli::cli_warn("No {.field last-updated} field found in {.path {f}}.")
-      return(FALSE)
-    }
+      if (length(idx) == 0L) {
+        cli::cli_warn("No {.field last-updated} field found in {.path {f}}.")
+        return(FALSE)
+      }
 
-    lines[idx] <- sprintf("# last-updated: %s", today)
-    writeLines(lines, con = f)
-    TRUE
-  }, FUN.VALUE = logical(1))
+      lines[idx] <- sprintf("# last-updated: %s", today)
+      writeLines(lines, con = f)
+      TRUE
+    },
+    FUN.VALUE = logical(1)
+  )
 
   cli::cli_alert_success(
-    "Updated {.field last-updated} to {.val {today}} in {sum(updated)} file(s)."
+    "Updated {.field last-updated} to {.val {today}} in {sum(updated)} file{?s}."
   )
 
   invisible(files[updated])

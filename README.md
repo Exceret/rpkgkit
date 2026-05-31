@@ -25,13 +25,103 @@ so generally file path can be omitted.
 
 Require extra installation:
 
-- `air_format()` - Format R code using air
+- `air_format()` - Format R code using
+  [air](https://github.com/posit-dev/air)
 
-- `flir_fix()` - Automatically fix linting issues using flir
+- `flir_fix()` - Automatically fix linting issues using
+  [flir](https://github.com/etiennebacher/flir)
 
 ### Available Standalone Scripts
 
 Use `usethis::use_standalone("Exceret/rpkgkit", "<name>")` to import:
+
+- args\_to\_func.R: matching arguments to function calls:
+
+<!-- -->
+
+    f1 <- function(a, b) a + b
+    f2 <- function(x, y, ...) x * y
+    f3 <- function(p, q) p - q
+
+    args <- list(a = 1, b = 2)
+
+    # Strict matching (default): returns f1 only
+    match_func_to_args(args, f1, f2, f3)
+
+    ## $f1
+    ## function (a, b) 
+    ## a + b
+    ## <environment: 0x56414b1e24c8>
+
+- caller\_cli.R: show where the cli function is called from
+
+<!-- -->
+
+    decorated <- add_caller_to_cli(cli::cli_alert_info)
+    foo1 <- \() {
+      print("I' m in foo1")
+      decorated("<- where is this called from?")
+    }
+    foo2 <- \() {
+      print("I' m in foo2")
+      foo1()
+    }
+    bar <- function() {
+      print("I' m in bar")
+      foo2()
+    }
+    bar()
+
+    ## [1] "I' m in bar"
+    ## [1] "I' m in foo2"
+    ## [1] "I' m in foo1"
+
+    ## ℹ [foo1()]: <- where is this called from?
+
+    # [1] "I' m in bar"
+    # [1] "I' m in foo2"
+    # [1] "I' m in foo1"
+    # ℹ [foo1()]: <- where is this called from?
+
+- colorful\_cli.R: Easier color calling in one cli function
+
+<!-- -->
+
+    color_cli <- create_colorful_cli_env()
+    color_cli$cli_alert_danger("{.red This is a red message}")
+
+    ## ✖ This is a red message
+
+    color_cli$cli_alert_info("{.blue This is a blue message}")
+
+    ## ℹ This is a blue message
+
+    color_cli$cli_alert_info("{.orange This is an orange message}")
+
+    ## ℹ This is an orange message
+
+    # cyan, green, magenta, yellow, purple, etc
+
+    color_cli2 <- create_colorful_cli_env(cli_theme = generate_color_theme()) # more color but slower
+    color_cli2$cli_alert_success(
+      "{.violetred3 R}{.orange a}{.yellow i}{.green n}{.cyan b}{.blue o}{.purple w}"
+    )
+
+    ## ✔ Rainbow
+
+- match\_arg.R: partial matching of arguments to function calls, like
+  `match.arg`, `rlang::arg_match`
+
+- ts\_cli.R: timestamp cli function
+
+<!-- -->
+
+    ts_cli <- create_ts_cli_env()
+    ts_cli$cli_alert_info("Hello, world!")
+
+    ## ℹ [2026/05/30 23:23:39] Hello, world!
+
+    # ℹ [2026/05/30 22:45:42] Hello, world!
 
 ### Standalone File Management
 

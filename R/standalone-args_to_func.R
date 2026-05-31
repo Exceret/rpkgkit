@@ -1,9 +1,9 @@
 # ---
 # repo: Exceret/rpkgkit
 # file: standalone-args_to_func.R
-# last-updated: 2026-05-21
+# last-updated: 2026-05-30
 # license: https://unlicense.org
-# imports: [cli, data.table, rlang]
+# imports: [cli, rlang]
 # dependencies: [import-standalone-purrr]
 # ---
 
@@ -154,7 +154,7 @@ filter_args_for_func <- function(args_list, fun, keep = NULL) {
 #' match_func_to_args(args, f1, f2, f3, dots_enabled = TRUE)
 #'
 #' # Return only function names
-#' match_func_to_args(args, f1, f2, name_only = TRUE)
+#' match_func_to_args(args, f1, f2, name_only = TRUE, dots_enabled=TRUE)
 #' # Returns: c("f1", "f2") when dots_enabled=TRUE
 #' }
 #' @noRd
@@ -165,8 +165,6 @@ match_func_to_args <- function(
   top_one_only = FALSE,
   dots_enabled = FALSE
 ) {
-  `:=` <- data.table::`:=`
-  `%chin%` <- data.table::`%chin%`
   # Validate args_list has proper names when non-empty
   if (length(args_list) > 0) {
     if (is.null(names(args_list)) || any(names(args_list) == "")) {
@@ -192,50 +190,43 @@ match_func_to_args <- function(
   guess <- imap(
     .x = func_formals,
     .f = \(lst, func_name) {
-      # * This function contains a ... parameter, so it can accept any arguments
-      # * In this case, we find the position of arguments
+      has_dots <- "..." %in% names(lst)
+      has_these_args <- names(lst) %in% names(args_list)
+      positions <- which(has_these_args)
+      count <- sum(has_these_args)
 
-      has_dots <- "..." %chin% names(lst)
-
-      has_these_args <- names(lst) %chin% names(args_list)
-
-      positions <- which(has_these_args) #
-      count <- sum(has_these_args) # number of matched args
-
-      if (length(positions) == 0) {
-        # integre(0), not found
-        list(
-          func_name = func_name,
-          position_sum = 0,
-          arg_count = 0,
-          has_dots = has_dots
-        )
-      } else {
-        list(
-          func_name = func_name,
-          position_sum = sum(positions),
-          arg_count = count,
-          has_dots = has_dots
-        )
-      }
+      data.frame(
+        func_name = func_name,
+        position_sum = if (length(positions) == 0L) 0L else sum(positions),
+        arg_count = count,
+        has_dots = has_dots,
+        stringsAsFactors = FALSE
+      )
     }
   )
 
-  guess_dt <- data.table::rbindlist(guess)
-  data.table::setorder(guess_dt, -arg_count, position_sum, has_dots)
-  guess_dt <- guess_dt[arg_count > 0]
+  guess_df <- do.call(rbind, guess)
+  guess_df <- guess_df[
+    order(-guess_df$arg_count, guess_df$position_sum, guess_df$has_dots),
+    ,
+    drop = FALSE
+  ]
 
   if (dots_enabled) {
-    # because dots can accrpt any args,
-    # so all funcs with `has_dots` are returned.
+    first_hold <- guess_df[1L, "arg_count"] == length(args_list)
+    logi_return <- guess_df$has_dots
+    logi_return[1L] <- first_hold
+
     if (name_only) {
-      return(guess_dt$func_name[guess_dt$has_dots])
+      return(guess_df$func_name[logi_return])
     } else {
-      return(dots_funcs[guess_dt$func_name[guess_dt$has_dots]])
+      return(dots_funcs[guess_df$func_name[logi_return]])
     }
   }
 
-  # handle without `has_dots`, which means strict matching
+  guess_df <- guess_df[guess_df$arg_count > 0L, , drop = FALSE]
+
+  # handle strict matching: funcs that can exactly match all args
   logical_vec <- vapply(
     X = func_formals,
     FUN = \(lst) {
@@ -245,35 +236,32 @@ match_func_to_args <- function(
     FUN.VALUE = logical(1L)
   )
 
-  # filter out funcs that cannot exactly match all args
   names(logical_vec) <- func_names
-  guess_dt[, exactly_matched := logical_vec[func_name]]
-  guess_dt <- guess_dt[guess_dt$exactly_matched]
+  guess_df$exactly_matched <- logical_vec[guess_df$func_name]
+  guess_df <- guess_df[guess_df$exactly_matched, , drop = FALSE]
 
-  # return one value
   if (top_one_only) {
     if (
-      all(
-        guess_dt[1, .(position_sum, arg_count)] ==
-          guess_dt[2, .(position_sum, arg_count)]
-      )
+      nrow(guess_df) >= 2L &&
+        guess_df$position_sum[1] == guess_df$position_sum[2] &&
+        guess_df$arg_count[1] == guess_df$arg_count[2]
     ) {
       cli::cli_warn(
         "Arguments provided is not enough to select a function, still return the first function but result may differ from expected"
       )
     }
     if (name_only) {
-      return(guess_dt$func_name[1])
+      return(guess_df$func_name[1])
     } else {
-      return(dots_funcs[[guess_dt$func_name[1L]]])
+      return(dots_funcs[[guess_df$func_name[1L]]])
     }
   }
 
   if (name_only) {
-    return(guess_dt$func_name)
+    return(guess_df$func_name)
   }
 
-  dots_funcs[guess_dt$func_name]
+  dots_funcs[guess_df$func_name]
 }
 
 #' @title Get Function Arguments from Calling Context

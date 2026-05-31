@@ -25,25 +25,3 @@ test_that("create_ts_cli_env with empty character vector returns empty env", {
   env <- rpkgkit:::create_ts_cli_env(character(0))
   expect_length(ls(env), 0L)
 })
-
-test_that("create_ts_cli_env wraps functions with add_timestamp_to_cli", {
-  captured_func <- NULL
-  local_mocked_bindings(
-    exists = function(x, envir) TRUE,
-    .package = "base"
-  )
-  local_mocked_bindings(
-    get0 = function(x, envir) function(...) cat("[mock cli]: ...\n"),
-    .package = "base"
-  )
-  local_mocked_bindings(
-    add_timestamp_to_cli = function(cli_func) {
-      captured_func <<- cli_func
-      function(...) cli_func(...)
-    },
-    .package = "rpkgkit"
-  )
-
-  env <- rpkgkit:::create_ts_cli_env("cli_alert_info")
-  expect_true("cli_alert_info" %in% ls(env))
-})

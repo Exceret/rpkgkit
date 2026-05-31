@@ -1,7 +1,7 @@
 # ---
 # repo: Exceret/rpkgkit
 # file: standalone-colorful_cli.R
-# last-updated: 2026-05-21
+# last-updated: 2026-05-30
 # license: https://unlicense.org
 # imports: [cli]
 # ---
@@ -13,7 +13,7 @@
 #' that automatically apply custom color themes to their output. This provides a
 #' convenient way to use multiple CLI functions with consistent colorful styling.
 #'
-#' @param cli_functions Character vector of function names from the \code{cli} package
+#' @param cli_func Character vector of function names from the \code{cli} package
 #'   to be wrapped with color functionality.
 #'
 #' @return Returns an environment containing color-wrapped versions of:
@@ -49,22 +49,37 @@
 #' @family colorful_cli
 #'
 create_colorful_cli_env <- function(
-  cli_functions = c(
+  cli_func = c(
     "cli_alert_info",
     "cli_alert_success",
     "cli_alert_warning",
     "cli_alert_danger"
+  ),
+  cli_theme = list(
+    span.red = list(color = "red"),
+    span.blue = list(color = "blue"),
+    span.orange = list(color = "orange"),
+    span.purple = list(color = "purple"),
+    span.green = list(color = "green"),
+    span.magenta = list(color = "magenta"),
+    span.cyan = list(color = "cyan"),
+    span.yellow = list(color = "yellow"),
+    span.grey = list(color = "grey"),
+    span.black = list(color = "black")
   )
 ) {
   cli_env <- new.env()
 
   vapply(
-    X = cli_functions,
+    X = cli_func,
     FUN = function(func_name) {
       if (exists(func_name, envir = asNamespace("cli"))) {
         orig_func <- get0(x = func_name, envir = asNamespace("cli"))
 
-        new_func <- add_colors_to_cli(orig_func)
+        new_func <- add_colors_to_cli(
+          cli_func = orig_func,
+          cli_theme = cli_theme
+        )
 
         assign(func_name, new_func, envir = cli_env)
         list(NULL)
@@ -128,7 +143,10 @@ add_colors_to_cli <- function(
     span.purple = list(color = "purple"),
     span.green = list(color = "green"),
     span.magenta = list(color = "magenta"),
-    span.cyan = list(color = "cyan")
+    span.cyan = list(color = "cyan"),
+    span.yellow = list(color = "yellow"),
+    span.grey = list(color = "grey"),
+    span.black = list(color = "black")
   )
 ) {
   function(...) {
@@ -152,7 +170,7 @@ add_colors_to_cli <- function(
 #'
 #' @details
 #' The returned expression can be evaluated with \code{\link[base]{eval}} or injected
-#' into other function bodies using \code{\link[rlang]{fn_body}} manipulation.
+#' into other function bodies using \code{\link[rlang]{fn_body}} manipulation (or just copy and paste).
 #' The expression includes proper cleanup via \code{\link[base]{on.exit}}
 #' to call \code{\link[cli]{cli_end}}.
 #'
@@ -175,4 +193,34 @@ generate_color_code <- function() {
     )
     on.exit(cli::cli_end())
   })
+}
+
+
+#' @title Generate a CLI color theme mapping for all R colors
+#' @description
+#' Creates a named list suitable for use as a \pkg{cli} theme, where each
+#' element maps a \code{span.<color_name>} class to the corresponding color.
+#' Covers every color returned by \code{\link[grDevices]{colors}()}.
+#'
+#' @return A named list of lists. Each element is named \code{span.<color>}
+#'   and contains a single-element list \code{list(color = <color>)}.
+#'
+#' @examples
+#' \dontrun{
+#' cli_alert_inform2 <- add_colors_to_cli(cli::cli_alert_inform, generate_color_theme())
+#' color_cli <- create_colorful_cli_env(cli_theme = generate_color_theme())
+#' }
+#'
+#'
+#' @noRd
+generate_color_theme <- function() {
+  color_names <- grDevices::colors()
+  cli_list_colors <- lapply(
+    X = color_names,
+    FUN = function(x) {
+      list(color = x)
+    }
+  )
+  names(cli_list_colors) <- paste0("span.", color_names)
+  cli_list_colors
 }

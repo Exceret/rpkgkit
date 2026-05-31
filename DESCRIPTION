@@ -1,6 +1,6 @@
 Package: rpkgkit
-Title: Provides A Set of Tools to Help You Create An R Package
-Version: 0.0.3
+Title: A Set of Tools to Help You Create and Maintain an R Package
+Version: 0.0.4
 Authors@R: 
     person("Yuxi", "Yang", , "15364051195@163.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
@@ -20,7 +20,8 @@ Suggests:
     ragg,
     stringr,
     testthat (>= 3.0.0),
-    yaml
+    yaml,
+    grDevices
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

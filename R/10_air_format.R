@@ -22,6 +22,7 @@ air_format <- function(path = NULL, ...) {
   } else {
     cli::cli_abort(("c" = "{.arg path} is required"))
   }
+  on.exit(cli::cli_alert_success("{.pkg Air} format {.path {path}}"))
 
   system2(
     command = "air",
@@ -31,8 +32,6 @@ air_format <- function(path = NULL, ...) {
     ),
     ...
   )
-
-  cli::cli_alert_success("Formated R code in {.path {path}}")
 }
 
 #' Check that the air formatter is installed

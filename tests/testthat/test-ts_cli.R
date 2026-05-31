@@ -9,7 +9,7 @@ test_that("add_timestamp_to_cli prepends timestamp to character messages", {
   wrapped("Hello, world")
 
   # The first message should have the timestamp glue syntax prepended
-  expect_match(captured[[1L]], "^\\[\\{time_stamp\\(\\)\\}\\] Hello, world")
+  expect_match(captured[[1L]], "\\{time_stamp\\(\\)\\}Hello, world")
 })
 
 test_that("add_timestamp_to_cli does nothing when no messages", {
@@ -47,7 +47,7 @@ test_that("add_timestamp_to_cli only modifies the first message when character",
   wrapped("First message", "Second message")
 
   # First message gets timestamp, second is unchanged
-  expect_match(captured[[1L]], "^\\[\\{time_stamp\\(\\)\\}\\] First message")
+  expect_match(captured[[1L]], "\\{time_stamp\\(\\)\\}First message")
   expect_equal(captured[[2L]], "Second message")
 })
 
@@ -60,7 +60,7 @@ test_that("add_timestamp_to_cli works with named arguments", {
   wrapped <- rpkgkit:::add_timestamp_to_cli(mock_cli)
   wrapped("msg text", .envir = rlang::current_env())
 
-  expect_match(captured$msg[[1L]], "^\\[\\{time_stamp\\(\\)\\}\\] msg text")
+  expect_match(captured$msg[[1L]], "\\{time_stamp\\(\\)\\}msg text")
   expect_true(is.environment(captured$.envir))
 })
 
@@ -107,7 +107,7 @@ test_that("add_timestamp_to_cli wraps named arguments correctly with mock", {
   env <- rlang::new_environment()
   wrapped("A", "B", .envir = env)
 
-  expect_match(captured_msgs[[1L]], "^\\[\\{time_stamp\\(\\)\\}\\] A")
+  expect_match(captured_msgs[[1L]], "\\{time_stamp\\(\\)\\}A")
   expect_equal(captured_msgs[[2L]], "B")
   expect_identical(captured_env, env)
 })

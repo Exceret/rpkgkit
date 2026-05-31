@@ -1,34 +1,10 @@
 # ---
 # repo: Exceret/rpkgkit
 # file: standalone-ts_cli.R
-# last-updated: 2026-05-20
+# last-updated: 2026-05-30
 # license: https://unlicense.org
 # imports: [cli]
 # ---
-
-#' @title Generate Timestamp String
-#'
-#' @description
-#' Creates a formatted character string representing the current system time.
-#' The format is "YYYY/mm/DD HH:MM:SS" (year/month/day hour:minute:second).
-#'
-#' @return Character string with current time in "YYYY/mm/DD HH:MM:SS" format.
-#'
-#'
-#' @examples
-#' \dontrun{
-#' # Current time as formatted string
-#' time_stamp()
-#' # Returns something like: "2025/06/15 16:04:00"
-#' }
-#'
-#' @noRd
-#' @family ts_cli
-#'
-time_stamp <- function() {
-  format(Sys.time(), "%Y/%m/%d %H:%M:%S")
-}
-
 
 #' @title A Decorator for Adding Timestamp to CLI Functions
 #'
@@ -39,6 +15,7 @@ time_stamp <- function() {
 #'
 #' @param cli_func A CLI function from the \code{cli} package (e.g., \code{cli_alert_info},
 #'                 \code{cli_warn}) that will be wrapped with timestamp functionality.
+#' @param time_stamp A function that returns a timestamp string. Defaults to a function
 #'
 #' @return Returns a modified version of the input function that automatically
 #'         adds a timestamp in the format \code{"[{time_stamp()}]"} to the beginning
@@ -63,19 +40,25 @@ time_stamp <- function() {
 #' @noRd
 #' @family ts_cli
 #'
-add_timestamp_to_cli <- function(cli_func) {
+add_timestamp_to_cli <- function(
+  cli_func,
+  time_stamp = function() {
+    paste0("[", format(Sys.time(), "%Y/%m/%d %H:%M:%S"), "] ")
+  }
+) {
   function(...) {
     messages <- list(...)
 
     if (length(messages) > 0L) {
       if (is.character(messages[[1L]])) {
-        messages[[1L]] <- paste0("[{time_stamp()}] ", messages[[1L]])
+        messages[[1L]] <- paste0("{time_stamp()}", messages[[1L]])
       }
     }
 
     do.call(cli_func, messages)
   }
 }
+
 #' @title Create Environment with Timestamped CLI Functions
 #'
 #' @description
@@ -83,7 +66,8 @@ add_timestamp_to_cli <- function(cli_func) {
 #' that automatically include timestamps in their output. This provides a
 #' convenient way to use multiple CLI functions with consistent timestamping.
 #'
-#' @param cli_functions from package \code{cli} to be wrapped with timestamp functionality.
+#' @param cli_func from package \code{cli} to be wrapped with timestamp functionality.
+#' @param time_stamp A function that returns a timestamp string. Defaults to a function
 #'
 #' @return Returns an environment containing timestamp-wrapped versions of:
 #' \itemize{
@@ -117,22 +101,28 @@ add_timestamp_to_cli <- function(cli_func) {
 #' @family ts_cli
 #'
 create_ts_cli_env <- function(
-  cli_functions = c(
+  cli_func = c(
     "cli_alert_info",
     "cli_alert_success",
     "cli_alert_warning",
     "cli_alert_danger"
-  )
+  ),
+  time_stamp = function() {
+    paste0("[", format(Sys.time(), "%Y/%m/%d %H:%M:%S"), "] ")
+  }
 ) {
   cli_env <- new.env()
 
   vapply(
-    X = cli_functions,
+    X = cli_func,
     FUN = function(func_name) {
       if (exists(func_name, envir = asNamespace("cli"))) {
         orig_func <- get0(x = func_name, envir = asNamespace("cli"))
 
-        new_func <- add_timestamp_to_cli(orig_func)
+        new_func <- add_timestamp_to_cli(
+          cli_func = orig_func,
+          time_stamp = time_stamp
+        )
 
         assign(func_name, new_func, envir = cli_env)
         list(NULL)
