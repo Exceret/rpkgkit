@@ -1,5 +1,3 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # rpkgkit
 
 <!-- badges: start -->
@@ -39,144 +37,151 @@ Use `usethis::use_standalone("Exceret/rpkgkit", "<name>")` to import:
 
 <!-- -->
 
-    f1 <- function(a, b) a + b
-    f2 <- function(x, y, ...) x * y
-    f3 <- function(p, q) p - q
+```r
+f1 <- function(a, b) a + b
+f2 <- function(x, y, ...) x * y
+f3 <- function(p, q) p - q
 
-    args <- list(a = 1, b = 2)
+args <- list(a = 1, b = 2)
 
-    # Strict matching (default): returns f1 only
-    match_func_to_args(args, f1, f2, f3)
+# Strict matching (default): returns f1 only
+match_func_to_args(args, f1, f2, f3)
+```
 
 - caller\_cli.R: show where the cli function is called from
 
 <!-- -->
-
-    decorated <- add_caller_to_cli(cli::cli_alert_info)
-    foo1 <- \() {
-      print("I' m in foo1")
-      decorated("<- where is this called from?")
-    }
-    foo2 <- \() {
-      print("I' m in foo2")
-      foo1()
-    }
-    bar <- function() {
-      print("I' m in bar")
-      foo2()
-    }
-    bar()
-    # [1] "I' m in bar"
-    # [1] "I' m in foo2"
-    # [1] "I' m in foo1"
-    # ℹ [foo1()]: <- where is this called from?
-
+```r
+decorated <- add_caller_to_cli(cli::cli_alert_info)
+foo1 <- \() {
+  print("I' m in foo1")
+  decorated("<- where is this called from?")
+}
+foo2 <- \() {
+  print("I' m in foo2")
+  foo1()
+}
+bar <- function() {
+  print("I' m in bar")
+  foo2()
+}
+bar()
+# [1] "I' m in bar"
+# [1] "I' m in foo2"
+# [1] "I' m in foo1"
+# ℹ [foo1()]: <- where is this called from?
+```
 - colorful\_cli.R: Easier color calling in one cli function
 
 <!-- -->
+```r
+color_cli <- create_colorful_cli_env()
+color_cli$cli_alert_danger("{.red This is a red message}")
+color_cli$cli_alert_info("{.blue This is a blue message}")
+color_cli$cli_alert_info("{.orange This is an orange message}")
+# cyan, green, magenta, yellow, purple, etc
 
-    color_cli <- create_colorful_cli_env()
-    color_cli$cli_alert_danger("{.red This is a red message}")
-    color_cli$cli_alert_info("{.blue This is a blue message}")
-    color_cli$cli_alert_info("{.orange This is an orange message}")
-    # cyan, green, magenta, yellow, purple, etc
-
-    color_cli2 <- create_colorful_cli_env(cli_theme = generate_color_theme()) # more color but slower
-    color_cli2$cli_alert_success(
-      "{.violetred3 R}{.orange a}{.yellow i}{.green n}{.cyan b}{.blue o}{.purple w}"
-    )
-
+color_cli2 <- create_colorful_cli_env(cli_theme = generate_color_theme()) # more color but slower
+color_cli2$cli_alert_success(
+  "{.violetred3 R}{.orange a}{.yellow i}{.green n}{.cyan b}{.blue o}{.purple w}"
+)
+```
 - match\_arg.R: partial matching of arguments to function calls, like
   `match.arg`, `rlang::arg_match`
 
 - ts\_cli.R: timestamp cli function
 
 <!-- -->
-
-    ts_cli <- create_ts_cli_env()
-    ts_cli$cli_alert_info("Hello, world!")
-    # ℹ [2026/05/30 22:45:42] Hello, world!
-
+```r
+ts_cli <- create_ts_cli_env()
+ts_cli$cli_alert_info("Hello, world!")
+# ℹ [2026/05/30 22:45:42] Hello, world!
+```
 ### Standalone File Management
 
 - `inquire_standalone()` - List standalone files available in a GitHub
   repository’s `R/` directory
 
 <!-- -->
-
-    inquire_standalone("r-lib/rlang")
-    # A tibble: 13 × 9
-    #    name                         path                           sha                                       size url                               html_url git_url download_url type
-    #    <chr>                        <chr>                          <chr>                                    <int> <chr>                             <chr>    <chr>   <chr>        <chr>
-    #  1 standalone-cli.R             R/standalone-cli.R             14c6006f721028d2da0ab1654afd49e426e745c6 18672 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  2 standalone-downstream-deps.R R/standalone-downstream-deps.R 09b7700582bf710498d2ca5652662669655e5600  9213 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  3 standalone-lazyeval.R        R/standalone-lazyeval.R        50ced0ddc07e4fffccbec96ef34e30a82cfbb075  2313 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  4 standalone-lifecycle.R       R/standalone-lifecycle.R       70f03184aa89aa7e801b2fc6b8a12dd3a0e61700  6411 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  5 standalone-linked-version.R  R/standalone-linked-version.R  9ab21931a161722b6b837fa3cd40dd0a65b88551  2167 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  6 standalone-obj-type.R        R/standalone-obj-type.R        e9c33c8e34f2a194c2bd71f0126fc0bdaa974e61  7175 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  7 standalone-purrr.R           R/standalone-purrr.R           0c1d7677258aada8464e6c3f48fb70a062492a89  5501 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  8 standalone-rlang.R           R/standalone-rlang.R           4da3655d2d1c86535616c53cd5dab421e1e0cf6b  1807 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    #  9 standalone-s3-register.R     R/standalone-s3-register.R     05f0a2680fcbbdda64524ffa5481940671faac83  6056 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    # 10 standalone-sizes.R           R/standalone-sizes.R           03ee9f7a8ddddd6132a3ebf703e0a9aa3ccf30d5  3069 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    # 11 standalone-types-check.R     R/standalone-types-check.R     42c756a299cea38af775b587a1fe440de2afed40  6843 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    # 12 standalone-vctrs.R           R/standalone-vctrs.R           a78927f6d65fd769c61e2c132dea05d89a8b353a 14292 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
-    # 13 standalone-zeallot.R         R/standalone-zeallot.R         5e9d59a03e1d6df18ab4921e7d828750d6a41d6f   843 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+```r
+inquire_standalone("r-lib/rlang")
+# A tibble: 13 × 9
+#    name                         path                           sha                                       size url                               html_url git_url download_url type
+#    <chr>                        <chr>                          <chr>                                    <int> <chr>                             <chr>    <chr>   <chr>        <chr>
+#  1 standalone-cli.R             R/standalone-cli.R             14c6006f721028d2da0ab1654afd49e426e745c6 18672 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  2 standalone-downstream-deps.R R/standalone-downstream-deps.R 09b7700582bf710498d2ca5652662669655e5600  9213 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  3 standalone-lazyeval.R        R/standalone-lazyeval.R        50ced0ddc07e4fffccbec96ef34e30a82cfbb075  2313 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  4 standalone-lifecycle.R       R/standalone-lifecycle.R       70f03184aa89aa7e801b2fc6b8a12dd3a0e61700  6411 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  5 standalone-linked-version.R  R/standalone-linked-version.R  9ab21931a161722b6b837fa3cd40dd0a65b88551  2167 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  6 standalone-obj-type.R        R/standalone-obj-type.R        e9c33c8e34f2a194c2bd71f0126fc0bdaa974e61  7175 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  7 standalone-purrr.R           R/standalone-purrr.R           0c1d7677258aada8464e6c3f48fb70a062492a89  5501 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  8 standalone-rlang.R           R/standalone-rlang.R           4da3655d2d1c86535616c53cd5dab421e1e0cf6b  1807 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+#  9 standalone-s3-register.R     R/standalone-s3-register.R     05f0a2680fcbbdda64524ffa5481940671faac83  6056 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+# 10 standalone-sizes.R           R/standalone-sizes.R           03ee9f7a8ddddd6132a3ebf703e0a9aa3ccf30d5  3069 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+# 11 standalone-types-check.R     R/standalone-types-check.R     42c756a299cea38af775b587a1fe440de2afed40  6843 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+# 12 standalone-vctrs.R           R/standalone-vctrs.R           a78927f6d65fd769c61e2c132dea05d89a8b353a 14292 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+# 13 standalone-zeallot.R         R/standalone-zeallot.R         5e9d59a03e1d6df18ab4921e7d828750d6a41d6f   843 https://api.github.com/repos/r-l… https:/… https:… https://raw… file
+```
 
 - `create_standalone()` - Create standalone utility files in your
   package
 
 <!-- -->
 
-    create_standalone("foo")
-    # ✔ Created standalone file: /data/home/yyx/Project/rpkgkit/R/standalone-.R
-    # ☐ File opened in editor.
-
+```r    
+create_standalone("foo")
+# ✔ Created standalone file: /data/home/yyx/Project/rpkgkit/R/standalone-.R
+# ☐ File opened in editor.
+```
 In `R/standalone-foo.R`
 
-    # ---
-    # repo: Exceret/rpkgkit
-    # file: standalone-foo.R
-    # last-updated: 2026-06-02
-    # license: https://unlicense.org
-    # imports: []
-    # ---
+```r
+# ---
+# repo: Exceret/rpkgkit
+# file: standalone-foo.R
+# last-updated: 2026-06-02
+# license: https://unlicense.org
+# imports: []
+# ---
+```
 
 - `update_time_in_standalone()` - Update `last-updated` field in
   standalone files
 
 <!-- -->
+```r
+update_time_in_standalone()
 
-    update_time_in_standalone()
-
-    # ---
-    # repo: Exceret/rpkgkit
-    # file: standalone-foo.R
-    # last-updated: 2026-06-02
-    # license: https://unlicense.org
-    # imports: []
-    # ---
+# ---
+# repo: Exceret/rpkgkit
+# file: standalone-foo.R
+# last-updated: 2026-06-02
+# license: https://unlicense.org
+# imports: []
+# ---
+```
 
 - `add_changelog_in_standalone()` - Add changelog entries to standalone
   files
 
 <!-- -->
+```r
+add_changelog_in_standalone("R/standalone-foo.R", "Added foo function")
+# ✔ Added changelog entry for "2026-06-02" in 1 file(s).
 
-    add_changelog_in_standalone("R/standalone-foo.R", "Added foo function")
-    # ✔ Added changelog entry for "2026-06-02" in 1 file(s).
-
-    # ---
-    # repo: Exceret/rpkgkit
-    # file: standalone-foo.R
-    # last-updated: 2026-06-02
-    # license: https://unlicense.org
-    # imports: []
-    # ---
-    #
-    # Changelog:
-    #
-    # 2026-06-02:
-    # Added foo function
-    #
+# ---
+# repo: Exceret/rpkgkit
+# file: standalone-foo.R
+# last-updated: 2026-06-02
+# license: https://unlicense.org
+# imports: []
+# ---
+#
+# Changelog:
+#
+# 2026-06-02:
+# Added foo function
+```
 
 ### NEWS.md Management
 
@@ -184,37 +189,39 @@ In `R/standalone-foo.R`
   guidelines
 
 <!-- -->
+```r
+news_md_add_entry("Added foo function")
 
-    news_md_add_entry("Added foo function")
+# rpkgkit 0.0.4 (2026-06-02)
 
-    # rpkgkit 0.0.4 (2026-06-02)
+## NEW FEATURES
 
-    ## NEW FEATURES
-
-    * Added foo function
+* Added foo function
+```
 
 - `news_md_check()` - Validate NEWS.md format for CRAN compliance
 
 <!-- -->
+```r
+news_md_check()
+# ℹ Checking NEWS.md with 22 lines
+# ✔ NEWS.md passed all required checks
+# ℹ 4 suggestion(s) for improvement
+# $valid
+# [1] TRUE
 
-    news_md_check()
-    # ℹ Checking NEWS.md with 22 lines
-    # ✔ NEWS.md passed all required checks
-    # ℹ 4 suggestion(s) for improvement
-    # $valid
-    # [1] TRUE
+# $errors
+# character(0)
 
-    # $errors
-    # character(0)
+# $warnings
+# character(0)
 
-    # $warnings
-    # character(0)
-
-    # $suggestions
-    # [1] "Line 10: Bullet points should start with '* ' followed by capital letter"
-    # [2] "Line 12: Bullet points should start with '* ' followed by capital letter"
-    # [3] "Line 14: Bullet points should start with '* ' followed by capital letter"
-    # [4] "Line 14: Longer entries should end with punctuation"
+# $suggestions
+# [1] "Line 10: Bullet points should start with '* ' followed by capital letter"
+# [2] "Line 12: Bullet points should start with '* ' followed by capital letter"
+# [3] "Line 14: Bullet points should start with '* ' followed by capital letter"
+# [4] "Line 14: Longer entries should end with punctuation"
+```
 
 - `news_md_show()` - Display NEWS.md content of a package in console
 
@@ -225,22 +232,28 @@ In `R/standalone-foo.R`
 
 This is a code snippet from [dplyr](https://github.com/tidyverse/dplyr)
 
-    starwars |>
-      mutate(name, bmi = mass / ((height / 100)^2)) |>
-      select(name:mass, bmi)
+```r
 
-    make_func_call_explicit("path_to_file", use_packages = "dplyr")
+starwars |>
+  mutate(name, bmi = mass / ((height / 100)^2)) |>
+  select(name:mass, bmi)
+
+make_func_call_explicit("path_to_file", use_packages = "dplyr")
+```
 
 It will be converted to
 
-    starwars |>
-      dplyr::mutate(name, bmi = mass / ((height / 100)^2)) |>
-      dplyr::select(name:mass, bmi)
+```r
+starwars |>
+  dplyr::mutate(name, bmi = mass / ((height / 100)^2)) |>
+  dplyr::select(name:mass, bmi)
+```
 
 - `use_hexsticker()` - Paste hex sticker to README.md
 
 <!-- -->
+```r
+use_hexsticker("rpkgkit.logo") # Althought it doesn't exist
 
-    use_hexsticker("rpkgkit.logo") # Althought it doesn't exist
-
-    # rpkgkit <img src="rpkgkit.logo" alt="package logo" align="right" height="139"/>
+# rpkgkit <img src="rpkgkit.logo" alt="package logo" align="right" height="139"/>
+```
