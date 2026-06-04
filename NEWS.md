@@ -1,3 +1,10 @@
+# rpkgkit 0.0.5 (2026-06-03)
+
+## NEW FEATURES
+
+* Added `rename_func` to change the naming style of functions
+
+
 # rpkgkit 0.0.4 (2026-06-02)
 
 ## NEW FEATURES

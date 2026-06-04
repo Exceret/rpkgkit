@@ -59,7 +59,7 @@ news_md_add_entry <- function(
   date = NULL,
   open_section = TRUE
 ) {
-  path <- path %||% get_wd()
+  path <- path %||% getwd()
   category <- match_arg(
     category,
     c("NEW FEATURES", "BUG FIXES", "MINOR IMPROVEMENTS", "DOCUMENTATION")
